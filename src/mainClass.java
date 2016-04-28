@@ -124,7 +124,6 @@ public class mainClass extends JPanel {
             }
             for(int i=0; i<lines.size(); i++)
             {
-
                 g2.draw((Line2D) lines.get(i));
             }
 
@@ -133,11 +132,13 @@ public class mainClass extends JPanel {
 
 
         public void add(Point point) {
+
             newPoint= new Ellipse2D.Double(point.getX()-5,point.getY()-5,10,10);
             points.add(newPoint);
             repaint();
         }
         public void addLine(Point p1,Point p2) {
+            g2.setColor(mycolor);
             newLine= new Line2D.Double(p1.getX(),p1.getY(),p2.getX(),p2.getY());
             lines.add(newLine);
             repaint();
@@ -215,7 +216,7 @@ public class mainClass extends JPanel {
                 int xt =new Integer(x.getText()).intValue();
                 int yt =new Integer(y.getText()).intValue();
 
-                Point temp = new Point((int)xMain+xt,(int)yMain+yt);
+                Point temp = new Point((int)xMain+xt,(int)yMain-yt);
 
                 add(temp);
             }
@@ -251,8 +252,15 @@ public class mainClass extends JPanel {
             public void mouseDragged(MouseEvent e)
             {
                 if(pointMain.contains(e.getPoint())){
+
                     xMain=e.getX(); yMain=e.getY();
+                    for(int i =0; i<points.size() ; i++){
+                        Ellipse2D tempPoint  = (Ellipse2D) points.get(i);
+                        newPoint.setFrame(xMain + tempPoint.getX() - 5, yMain + tempPoint.getX() - 5, 10, 10);
+                        if(newPoint!=null) remove(newPoint);
+                    }
                     repaint();
+
                 }
             }
         }
