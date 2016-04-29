@@ -16,6 +16,7 @@ public class mainClass extends JPanel {
 
     static double xMain;
     static double yMain;
+    static Line2D scale;
     static Ellipse2D pointMain;
     static Line2D xLine;
     static Line2D yLine;
@@ -118,6 +119,14 @@ public class mainClass extends JPanel {
             g2.draw(xLine);
             g2.fill(pointMain);
             g2.setColor(mycolor);
+            for(int i=0; i<xMain*2; i+=10){
+                scale= new  Line2D.Double(i,yMain+5,i,yMain-5);
+                g2.draw(scale);
+            }
+            for(int i=0; i<yMain*2; i+=10){
+                scale= new  Line2D.Double(xMain-5,i,xMain+5,i);
+                g2.draw(scale);
+            }
             for(int i=0; i<points.size(); i++)
             {
                 g2.fill((Ellipse2D) points.get(i));
@@ -239,7 +248,7 @@ public class mainClass extends JPanel {
         private class setColor implements ActionListener {
             public void actionPerformed(ActionEvent e) {
             mycolor= JColorChooser.showDialog(null,"set your color",mycolor);
-                repaint();
+
 
             }
         }
@@ -252,12 +261,16 @@ public class mainClass extends JPanel {
             public void mouseDragged(MouseEvent e)
             {
                 if(pointMain.contains(e.getPoint())){
-
+                    int Lastx = (int)xMain;
+                    int Lasty = (int)yMain;
+                    Ellipse2D[] temp = new Ellipse2D[points.size()];
                     xMain=e.getX(); yMain=e.getY();
                     for(int i =0; i<points.size() ; i++){
-                        Ellipse2D tempPoint  = (Ellipse2D) points.get(i);
-                        newPoint.setFrame(xMain + tempPoint.getX() - 5, yMain + tempPoint.getX() - 5, 10, 10);
-                        if(newPoint!=null) remove(newPoint);
+                    temp[i]= (Ellipse2D)points.get(i);
+                    temp[i].setFrame((xMain-Lastx)+(temp[i].getCenterX()-5),(yMain-Lasty)+(temp[i].getCenterY()-5),10,10);
+                        points.set(i, temp[i]);
+                        System.out.println(temp[i].getX());
+                        System.out.println(temp[i].getY());
                     }
                     repaint();
 
