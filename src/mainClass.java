@@ -74,6 +74,7 @@ public class mainClass extends JPanel {
             addMouseListener(new CustomListener());
             addMouseMotionListener(new MyMuve());
             addMouseMotionListener(new mainMuve());
+            addMouseWheelListener(new Scroll());
             lines = new ArrayList();
             point.setSize(100, 30); point.setLocation(0, 0);
             add(point);
@@ -119,12 +120,14 @@ public class mainClass extends JPanel {
             g2.draw(xLine);
             g2.fill(pointMain);
             g2.setColor(mycolor);
+
             for(int i=0; i<xMain*2; i+=10){
-                scale= new  Line2D.Double(i,yMain+5,i,yMain-5);
+                scale = new Line2D.Double(i,yMain+5,i,yMain-5);
                 g2.draw(scale);
             }
+
             for(int i=0; i<yMain*2; i+=10){
-                scale= new  Line2D.Double(xMain-5,i,xMain+5,i);
+                scale = new Line2D.Double(xMain-5,i,xMain+5,i);
                 g2.draw(scale);
             }
             for(int i=0; i<points.size(); i++)
@@ -238,7 +241,7 @@ public class mainClass extends JPanel {
                 int xt2 =new Integer(x2.getText()).intValue();
                 int yt2 =new Integer(y2.getText()).intValue();
 
-                Point x = new Point((int)xMain+xt1,(int)yMain+yt1);
+                Point x = new Point((int)xMain+xt1,(int)yMain-yt1);
                 Point y = new Point((int)xMain+xt2,(int)yMain-yt2);
                 addLine(x,y);
 
@@ -263,18 +266,62 @@ public class mainClass extends JPanel {
                 if(pointMain.contains(e.getPoint())){
                     int Lastx = (int)xMain;
                     int Lasty = (int)yMain;
-                    Ellipse2D[] temp = new Ellipse2D[points.size()];
+                    Ellipse2D[] tempPoints = new Ellipse2D[points.size()];
                     xMain=e.getX(); yMain=e.getY();
                     for(int i =0; i<points.size() ; i++){
-                    temp[i]= (Ellipse2D)points.get(i);
-                    temp[i].setFrame((xMain-Lastx)+(temp[i].getCenterX()-5),(yMain-Lasty)+(temp[i].getCenterY()-5),10,10);
-                        points.set(i, temp[i]);
-                        System.out.println(temp[i].getX());
-                        System.out.println(temp[i].getY());
+                        tempPoints[i]= (Ellipse2D)points.get(i);
+                        tempPoints[i].setFrame((xMain - Lastx) + (tempPoints[i].getCenterX() - 5), (yMain - Lasty) + (tempPoints[i].getCenterY() - 5), 10, 10);
+                        points.set(i, tempPoints[i]);
+                    }
+                    Line2D[] tempLinis = new Line2D[lines.size()];
+                    for(int i =0; i<lines.size() ; i++) {
+                        tempLinis[i] = (Line2D) lines.get(i);
+                        tempLinis[i].setLine((xMain - Lastx) + tempLinis[i].getX1(), (yMain - Lasty) + tempLinis[i].getY1(),
+                                (xMain - Lastx) + tempLinis[i].getX2(), (yMain - Lasty) + tempLinis[i].getY2());
+                        lines.set(i, tempLinis[i]);
+
                     }
                     repaint();
 
                 }
+            }
+        }
+        public class Scroll implements MouseWheelListener{
+
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                Ellipse2D[] tempPoints = new Ellipse2D[points.size()];
+                if(e.getPreciseWheelRotation()==-1.0){
+                    for(int i =0; i<points.size() ; i++){
+                        tempPoints[i]= (Ellipse2D)points.get(i);
+                        tempPoints[i].setFrame((0.2 * (tempPoints[i].getCenterX() - xMain)) + tempPoints[i].getCenterX() - 5,
+                                (0.2 * (tempPoints[i].getCenterY() - yMain)) + tempPoints[i].getCenterY() - 5, 10, 10);
+                        points.set(i, tempPoints[i]);
+                    }
+                    Line2D[] tempLinis = new Line2D[lines.size()];
+                    for(int i =0; i<lines.size() ; i++) {
+                        tempLinis[i] = (Line2D) lines.get(i);
+                        tempLinis[i].setLine(tempLinis[i].getX1(),tempLinis[i].getY1(),
+                                tempLinis[i].getX2() + (0.2*(tempLinis[i].getX2() - xMain)), tempLinis[i].getY2() + (0.2*(tempLinis[i].getY2() - yMain)));
+                        lines.set(i, tempLinis[i]);
+                    }
+                }
+                if(e.getPreciseWheelRotation()==1.0) {
+                    for (int i = 0; i < points.size(); i++) {
+                        tempPoints[i] = (Ellipse2D) points.get(i);
+                        tempPoints[i].setFrame(tempPoints[i].getCenterX() - (0.2 * (tempPoints[i].getCenterX() - xMain)) - 5,
+                                tempPoints[i].getCenterY() - (0.2 * (tempPoints[i].getCenterY() - yMain)) - 5, 10, 10);
+                        points.set(i, tempPoints[i]);
+                    }
+                    Line2D[] tempLinis = new Line2D[lines.size()];
+                    for(int i =0; i<lines.size() ; i++) {
+                        tempLinis[i] = (Line2D) lines.get(i);
+                        tempLinis[i].setLine(tempLinis[i].getX1(), tempLinis[i].getY1(),
+                                tempLinis[i].getX2() - (0.2*(tempLinis[i].getX2() - xMain)), tempLinis[i].getY2() - (0.2*(tempLinis[i].getY2() - yMain)));
+                        lines.set(i, tempLinis[i]);
+                    }
+                }
+                repaint();
+
             }
         }
     }
